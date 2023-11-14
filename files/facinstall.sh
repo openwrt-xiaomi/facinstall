@@ -171,8 +171,8 @@ fi_remove_all_hooks() {
 	sed -i "s/\n\n\n\n/\n/g"  $FI_FLASH_JAVA_FN
 }
 
-fi_install_upgrage_hooks() {
-	filog "fi_install_upgrage_hooks"
+fi_install_upgrade_hooks() {
+	filog "fi_install_upgrade_hooks"
 	fi_install_check_hook
 	[ $? != 0 ] && return 1
 	fi_install_ramfs_hook
@@ -227,12 +227,12 @@ shift $((OPTIND - 1 ))	# OPTIND is 1 based
 case "$1" in
 	boot)
 		filog "boot"
-		fi_install_upgrage_hooks
+		fi_install_upgrade_hooks
 		exit 0
 		;;
 	start)
 		filog "start"
-		fi_install_upgrage_hooks
+		fi_install_upgrade_hooks
 		exit 0
 		;;
 	stop)
