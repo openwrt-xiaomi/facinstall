@@ -81,7 +81,7 @@ fi_platform_do_upgrade() {
 		if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_TRX" ]; then
 			fit_offset=64
 			fit_image=$FI_IMAGE.fit
-			dd if="$ASUS_FW_FILE_ORIG" bs=64 skip=1 of="$fit_image"
+			dd if="$FI_IMAGE" bs=64 skip=1 of="$fit_image"
 		fi
 		
 		ubiupdatevol /dev/$kernel_vol_dev "$fit_image"
@@ -95,6 +95,7 @@ fi_platform_do_upgrade() {
 		sync
 		umount -a
 		reboot -f
+		sleep 1
 		exit 0
 	fi
 
