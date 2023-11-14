@@ -10,7 +10,6 @@ FI_LOGMODE=2
 FI_STAGE=2
 filog "call: fi_do_stage2.sh $FI_IMAGE"
 fi_set_image $FI_IMAGE
-sleep 10
 
 fi_after_flash() {
 	v "Upgrade completed"

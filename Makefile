@@ -48,10 +48,10 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./files/fi_boards.sh     $(1)/lib/upgrade/$(PKG_NAME)/fi_boards.sh
 
 	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
-	$(INSTALL_BIN) ./files/validate_fw_image.sh.sh  $(1)/lib/upgrade/$(PKG_NAME)/validate_fw_image.sh.sh
+	$(INSTALL_BIN) ./files/validate_fw_image.sh  $(1)/lib/upgrade/$(PKG_NAME)/validate_fw_image.sh
 
 	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
-	$(INSTALL_BIN) ./files/fi_do_stage2.sh.sh       $(1)/lib/upgrade/$(PKG_NAME)/fi_do_stage2.sh.sh
+	$(INSTALL_BIN) ./files/fi_do_stage2.sh       $(1)/lib/upgrade/$(PKG_NAME)/fi_do_stage2.sh
 
 	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
 	$(INSTALL_BIN) ./files/xiaomi.sh    $(1)/lib/upgrade/$(PKG_NAME)/xiaomi.sh
