@@ -187,7 +187,7 @@ fi_check_sizes() {
 		return 1
 	fi	
 	img_end=$(( img_offset + img_size ))
-	if [ $img_end -gt "$FI_IMAGE" ]; then
+	if [ $img_end -gt "$FI_IMAGE_SIZE" ]; then
 		echo "incorrect image size (part: '$part_name')"
 		return 1
 	fi
