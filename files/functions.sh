@@ -14,6 +14,9 @@ FI_LOGMODE=0
 FI_CHECK_ORIG_FN="/usr/libexec/validate_firmware_image"
 FI_CHECK_HOOK_FN="$FI_PROGDIR/validate_fw_image.sh"
 
+FI_RAMFS_HOOK_FN="/lib/upgrade/stage2"
+FI_RAMFS_HOOK_FLAG=$FI_PROGNAME
+
 FI_FLASH_ORIG_FN="/lib/upgrade/do_stage2"
 FI_FLASH_HOOK_FN="$FI_PROGDIR/fi_do_stage2.sh"
 

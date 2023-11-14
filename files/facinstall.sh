@@ -41,6 +41,42 @@ fi_install_check_hook() {
 }
 
 #############################
+#	do
+#		local file="$(command -v "$binary" 2>/dev/null)"
+#		[ -n "$file" ] && install_bin "$file"
+#	done
+#	install_file /etc/resolv.conf /lib/*.sh /lib/functions/*.sh
+#############################
+
+fi_install_ramfs_hook() {
+	local cmd
+	local dst
+	local xx
+	if [ ! -f "$FI_RAMFS_HOOK_FN" ]; then
+		filog 'File "stage2" not found. Skip.'
+		return 0
+	fi
+	xx=$( grep -c -F "$FI_RAMFS_HOOK_FLAG" "$FI_RAMFS_HOOK_FN" )
+	if [ "$xx" != "0" ]; then
+		filog 'File "stage2" already patched'
+		return 0
+	fi
+	cmd="install_file $FI_PROGDIR/<<STAR>>.sh"
+	cmd=$( fi_sed_path "$cmd" )
+	dst="install_file /etc/resolv.conf"
+	dst=$( fi_sed_path "$dst" )
+	sed -i "/$dst/i $cmd" $FI_RAMFS_HOOK_FN
+	sed -i "s/<<STAR>>/\*/g" $FI_RAMFS_HOOK_FN
+	xx=$( grep -c -F "$FI_RAMFS_HOOK_FLAG" "$FI_RAMFS_HOOK_FN" )
+	if [ "$xx" = "0" ]; then
+		fierr "Fail on patch file $FI_RAMFS_HOOK_FN"
+		return 1
+	fi
+	filog 'File "stage2" succefully patched'
+	return 0
+}
+
+#############################
 #v "Performing system upgrade..."
 #if type 'platform_do_upgrade' >/dev/null 2>/dev/null; then
 #	platform_do_upgrade "$IMAGE"
@@ -82,6 +118,7 @@ fi_install_flash_hook() {
 
 fi_patch_flash_js() {
 	local cmd  cmd1 cmd2 cmd3 cmd4 cmd5 cmd6 cmd7 cmd8 cmd9 cmdA
+	local dst
 	local xx
 	if [ ! -f "$FI_FLASH_JAVA_FN" ]; then
 		filog 'File "flash.js" not found. Skip.'
@@ -124,6 +161,8 @@ fi_remove_all_hooks() {
 	
 	hookname=$( basename  $FI_CHECK_HOOK_FN )
 	sed -i "/$hookname/d" $FI_CHECK_ORIG_FN
+
+	sed -i "/$FI_RAMFS_HOOK_FLAG/d" $FI_RAMFS_HOOK_FN
 	
 	hookname=$( basename  $FI_FLASH_HOOK_FN )
 	sed -i "/$hookname/d" $FI_FLASH_ORIG_FN
@@ -136,6 +175,8 @@ fi_install_upgrage_hooks() {
 	filog "fi_install_upgrage_hooks"
 	fi_install_check_hook
 	[ $? != 0 ] && return 1
+	fi_install_ramfs_hook
+	[ $? != 0 ] && { fi_remove_all_hooks ; return 1; }
 	fi_install_flash_hook
 	[ $? != 0 ] && { fi_remove_all_hooks ; return 1; }
 	fi_patch_flash_js
