@@ -32,10 +32,10 @@ fi
 if [ -f "$FI_IMAGE" ] && [ -n "$FI_SCRIPT" ]; then
 	filog "call: fi_do_stage2.sh for $FI_BOARD"
 	FI_LOGMODE=2
-	type 'fi_platform_upgrade_image' >/dev/null 2>/dev/null
+	type 'fi_platform_do_upgrade' >/dev/null 2>/dev/null
 	if [ $? != 0 ]; then
-		fidie "Function 'fi_platform_upgrade_image' not found"
+		fidie "Function 'fi_platform_do_upgrade' not found"
 	fi
-	fi_platform_upgrade_image
+	fi_platform_do_upgrade
 	fi_after_flash
 fi
