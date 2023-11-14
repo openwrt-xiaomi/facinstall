@@ -1,0 +1,27 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+
+boot() {
+	/lib/upgrade/facinstall/facinstall.sh -- boot
+	return 0
+}
+
+reload() {
+	/lib/upgrade/facinstall/facinstall.sh -- reload
+	return 0
+}
+
+restart() {
+	/lib/upgrade/facinstall/facinstall.sh -- stop
+	/lib/upgrade/facinstall/facinstall.sh -- start
+}
+
+start() {
+	/lib/upgrade/facinstall/facinstall.sh -- start
+}
+
+stop() {
+	/lib/upgrade/facinstall/facinstall.sh -- stop
+	return 0
+}
