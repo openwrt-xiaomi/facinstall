@@ -41,7 +41,7 @@ fi_get_ubi_vol_dev() {
 fi_platform_do_upgrade() {
 	local fit_offset=0
 	local kernel_vol_dev
-	local fit_image
+	local skip_size=0
 
 	if ! fi_platform_check_image; then
 		fidie "Image file '$FI_IMAGE' is incorrect!"
@@ -77,14 +77,13 @@ fi_platform_do_upgrade() {
 			fidie "cannot found ubi volume with name '$FI_KERNEL_VOL'"
 		fi
 
-		fit_image=$FI_IMAGE
+		skip_size=0
 		if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_TRX" ]; then
-			fit_offset=64
-			fit_image=$FI_IMAGE.fit
-			dd if="$FI_IMAGE" bs=64 skip=1 of="$fit_image"
+			skip_size=64
 		fi
 		
-		ubiupdatevol /dev/$kernel_vol_dev "$fit_image"
+		filog "Flash data to '$FI_KERNEL_VOL' (dev: $kernel_vol_dev)..."
+		ubiupdatevol /dev/$kernel_vol_dev --skip=$skip_size "$FI_IMAGE"
 		if [ "$( echo -n $? )" -ne 0 ]; then
 			fierr "Failed to flash '$FI_KERNEL_VOL'"
 			return 1
@@ -95,7 +94,7 @@ fi_platform_do_upgrade() {
 		sync
 		umount -a
 		reboot -f
-		sleep 1
+		sleep 5
 		exit 0
 	fi
 
