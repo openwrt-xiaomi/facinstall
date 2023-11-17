@@ -164,6 +164,64 @@ fi_get_round_up() {
 	echo $(( value + pad ))
 }
 
+fi_get_file_crc32() {
+	local filename=$1
+	local offset=$2
+	local length=$3
+	local filesize
+	local count
+	[ -z "$offset" ] && offset=0
+	filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+	offset=$( printf "%d" "$offset" )
+	if [ -z "$length" ]; then
+		length=$(( filesize - offset ))
+	else
+		length=$( printf "%d" "$length" )
+	fi
+	[ "$length" -gt $(( filesize - offset )) ] && { echo ""; return 1; }
+	dd if="$filename" iflag=skip_bytes,count_bytes skip=$offset bs=2048 count=$length 2>/dev/null | \
+		gzip -1 -c | tail -c8 | hexdump -v -n4 -e '1/4 "%02x"'
+	return 0
+}
+
+fi_check_uimage_crc() {
+	local filename=$1
+	local offset=$2
+	local filesize
+	local data_size  total_size
+	local data_crc_orig  data_crc_calc
+	local hdr_crc_orig   hdr_crc_calc
+	local imghdrfn
+	[ -z "$offset" ] && offset=0
+	filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+	offset=$( printf "%d" "$offset" )
+	data_size=$( fi_get_uint32_at $(( offset + 12 )) "be" "$filename" )
+	total_size=$(( 64 + data_size ))
+	if [ "$total_size" -gt "$filesize" ]; then
+		echo "Incorrect uImage data size";
+		return 1;
+	fi
+	data_crc_orig=$( fi_get_hexdump_at 24 4 "$filename" )
+	data_crc_calc=$( fi_get_file_crc32 "$filename" 64 $data_size )
+	if [ "$data_crc_orig" != "$data_crc_calc" ]; then
+		echo "uImage has incorrect CRC32 checksum"
+		return 1
+	fi
+	imghdrfn="/tmp/$( basename "$filename" ).uimage.hdr"
+	rm -f "$imghdrfn"
+	dd if="$filename" iflag=skip_bytes skip=$offset bs=4 count=1 2>/dev/null > "$imghdrfn"
+	echo -en "\x00\x00\x00\x00" >> "$imghdrfn"
+	dd if="$filename" iflag=skip_bytes skip=$(( offset + 8 )) bs=56 count=1 2>/dev/null >> "$imghdrfn"
+	hdr_crc_orig=$( fi_get_hexdump_at $(( offset + 4 )) 4 "$filename" )
+	hdr_crc_calc=$( fi_get_file_crc32 "$imghdrfn" )
+	if [ "$hdr_crc_orig" != "$hdr_crc_calc" ]; then
+		echo "uImage header has incorrect CRC32 checksum"
+		return 1
+	fi
+	echo ""
+	return 0
+}
+
 fi_get_part_size() {
 	local part_name=$1
 	local part

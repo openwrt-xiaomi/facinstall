@@ -129,6 +129,7 @@ fi_platform_init() {
 
 fi_platform_check_image() {
 	local image
+	local err
 	local xx
 	
 	if ! fi_platform_init; then
@@ -183,6 +184,13 @@ fi_platform_check_image() {
 		if [ "$xx" == "0" ]; then
 			fierr "Incorrect TRX image! Part 'rootfs-1' not found!"
 			return 1
+		fi
+		if [ "$FI_STAGE" != "2" ]; then 
+			err=$( fi_check_uimage_crc $FI_IMAGE 0 )
+			if [ -n "$err" ]; then
+				fierr "$err"
+				return 1
+			fi
 		fi
 		FI_LOGMODE=2
 		filog "Detect TRX stock image"

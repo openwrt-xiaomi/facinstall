@@ -332,6 +332,7 @@ fi_platform_check_image() {
 	local modelid
 	local kernel_size
 	local rootfs_offset
+	local img_crc_orig  img_crc_calc
 	local xx
 	local err
 	if ! fi_platform_init; then
@@ -349,8 +350,15 @@ fi_platform_check_image() {
 
 	if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_UIMAGE" ]; then
 		if [ "$FI_UIMAGE_SUPPORT" != "true" ]; then
-			fierr "Legacy uImage not supoorted"
+			fierr "Legacy uImage not supported"
 			return 1
+		fi
+		if [ "$FI_STAGE" != "2" ]; then 
+			err=$( fi_check_uimage_crc $FI_IMAGE 0 )
+			if [ -n "$err" ]; then
+				fierr "$err"
+				return 1
+			fi
 		fi
 		kernel_size=$( fi_get_uint32_at 12 "be" )
 		kernel_size=$(( kernel_size + 64 ))
@@ -387,6 +395,15 @@ fi_platform_check_image() {
 		if [ -n "$err" ]; then
 			fierr "$err"
 			return 1
+		fi
+		if [ "$FI_STAGE" != "2" ]; then 
+			img_crc_orig=$( fi_get_uint32_at 8 )
+			img_crc_orig=$( printf '%08x' "$(( img_crc_orig ^ 0xFFFFFFFF ))" )
+			img_crc_calc=$( fi_get_file_crc32 "$FI_IMAGE" 12 )
+			if [ "$img_crc_orig" != "$img_crc_calc" ]; then
+				fierr "HDR1 image has incorrect CRC32 checksum"
+				return 1
+			fi
 		fi
 		FI_LOGMODE=2
 		filog "Detect HDR1-image"
