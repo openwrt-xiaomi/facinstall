@@ -180,7 +180,7 @@ fi_get_file_crc32() {
 	fi
 	[ "$length" -gt $(( filesize - offset )) ] && { echo ""; return 1; }
 	dd if="$filename" iflag=skip_bytes,count_bytes skip=$offset bs=2048 count=$length 2>/dev/null | \
-		gzip -1 -c | tail -c8 | hexdump -v -n4 -e '1/4 "%02x"'
+		gzip -1 -c | tail -c8 | hexdump -v -n4 -e '1/4 "%08x"'
 	return 0
 }
 
