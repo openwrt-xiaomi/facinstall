@@ -20,8 +20,11 @@ fi_init_board() {
 	xiaomi,mi-router-hd|\
 	xiaomi,r3d|\
 	xiaomi,redmi-router-ax6s|\
+	xiaomi,mi-router-wr30u|\
 	xiaomi,mi-router-wr30u-stock|\
+	xiaomi,mi-router-ax3000t|\
 	xiaomi,mi-router-ax3000t-stock|\
+	xiaomi,redmi-router-ax6000|\
 	xiaomi,redmi-router-ax6000-stock)
 		FI_SCRIPT="xiaomi.sh"
 		;;
@@ -58,8 +61,11 @@ fi_init_board() {
 		CI_KERNPART="kernel"
 		CI_UBIPART="ubi"
 		;;
+	xiaomi,mi-router-wr30u|\
 	xiaomi,mi-router-wr30u-stock|\
+	xiaomi,mi-router-ax3000t|\
 	xiaomi,mi-router-ax3000t-stock|\
+	xiaomi,redmi-router-ax6000|\
 	xiaomi,redmi-router-ax6000-stock)
 		CI_KERN_UBIPART="ubi_kernel"
 		CI_ROOT_UBIPART="ubi"
@@ -112,14 +118,17 @@ fi_init_board() {
 		FI_ROOTFS_PARTSIZE=0x1e00000
 		FI_RESTORE_NVRAM="fw_setenv boot_fw1 'run boot_rd_img2;bootm'"
 		;;
+	xiaomi,mi-router-wr30u|\
 	xiaomi,mi-router-wr30u-stock)
 		FI_HDR_MODEL_ID=72
 		FI_RESTORE_NVRAM="fw_setenv boot_fw1 'run boot_rd_img2;bootm'"
 		;;
+	xiaomi,mi-router-ax3000t|\
 	xiaomi,mi-router-ax3000t-stock)
 		FI_HDR_MODEL_ID=75
 		FI_RESTORE_NVRAM="fw_setenv boot_fw1 'run boot_rd_img2;bootm'"
 		;;
+	xiaomi,redmi-router-ax6000|\
 	xiaomi,redmi-router-ax6000-stock)
 		FI_HDR_MODEL_ID=61
 		FI_RESTORE_NVRAM="fw_setenv boot_fw1 'run boot_rd_img2;bootm'"
