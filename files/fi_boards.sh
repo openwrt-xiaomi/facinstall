@@ -7,6 +7,7 @@ fi_init_board() {
 	FI_SCRIPT=
 	
 	case "$FI_BOARD" in
+	asus,rt-ax52|\
 	asus,rt-ax59u|\
 	asus,tuf-ax4200|\
 	asus,tuf-ax6000)
@@ -37,6 +38,7 @@ fi_init_board() {
 	. $FI_PROGDIR/$FI_SCRIPT
 	
 	case "$FI_BOARD" in
+	asus,rt-ax52|\
 	asus,rt-ax59u|\
 	asus,tuf-ax4200|\
 	asus,tuf-ax6000)
@@ -75,6 +77,10 @@ fi_init_board() {
 	esac
 
 	case "$FI_BOARD" in
+	asus,rt-ax52)
+		FI_HW_MODEL="RT-AX52"
+		FI_KERNEL_SIZE=0x45fe000
+		;;
 	asus,rt-ax59u)
 		FI_HW_MODEL="RT-AX59U"
 		FI_KERNEL_SIZE=0x45fe000
