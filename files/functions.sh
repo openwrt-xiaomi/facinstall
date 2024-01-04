@@ -345,7 +345,7 @@ fi_check_tar() {
 	if [ -z "$tar_file" ]; then
 		tar_file=$FI_IMAGE
 	fi
-	magic=$( fi_get_hexdump_at 0 4 "$tar_file" )
+	magic=$( fi_get_hexdump_at 0 8 "$tar_file" )
 	if [ "$magic" != $FI_MAGIC_SYSUPG ]; then
 		fierr "incorrect TAR-image!"
 		return 1

@@ -490,6 +490,15 @@ fi_platform_check_image() {
 		return 0
 	fi
 
+	if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_SYSUPG" ]; then
+		fi_check_tar $FI_IMAGE || return 1
+		if [ "$FI_HOOK_TARSYSUPG" = "true" ]; then
+			FI_LOGMODE=2
+			filog "Detect sysupgrade TAR-image"
+			return 0
+		fi
+	fi
+
 	fierr "Incorrect image header"
 	return 1
 }
