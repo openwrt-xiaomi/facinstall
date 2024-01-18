@@ -7,12 +7,13 @@
 
 FI_LOGMODE=0
 
-#############################
+############################# /usr/libexec/validate_firmware_image
 #include /lib/upgrade
 #
 #VALID=1
 #FORCEABLE=1
 #ALLOW_BACKUP=1
+#[ -f /lib/upgrade/facinstall/validate_fw_image.sh ] && . /lib/upgrade/facinstall/validate_fw_image.sh "$1"   # hook
 #
 ## Mark image as invalid but still possible to install
 #notify_firmware_invalid() { 
@@ -40,11 +41,12 @@ fi_install_check_hook() {
 	return 0
 }
 
-#############################
+############################# /lib/upgrade/stage2
 #	do
 #		local file="$(command -v "$binary" 2>/dev/null)"
 #		[ -n "$file" ] && install_bin "$file"
 #	done
+#	install_file /lib/upgrade/facinstall/*.sh          # hook
 #	install_file /etc/resolv.conf /lib/*.sh /lib/functions/*.sh
 #############################
 
@@ -76,8 +78,9 @@ fi_install_ramfs_hook() {
 	return 0
 }
 
-#############################
+############################# /lib/upgrade/do_stage2
 #v "Performing system upgrade..."
+#[ -f /lib/upgrade/facinstall/fi_do_stage2.sh ] && . /lib/upgrade/facinstall/fi_do_stage2.sh   # hook
 #if type 'platform_do_upgrade' >/dev/null 2>/dev/null; then
 #	platform_do_upgrade "$IMAGE"
 #else
@@ -108,11 +111,12 @@ fi_install_flash_hook() {
 	return 0
 }
 
-#############################
+############################# /www/luci-static/resources/view/system/flash.js
 #var cntbtn = E('button', {
 #	'class': 'btn cbi-button-action important',
 #	'click': ui.createHandlerFn(this, 'handleSysupgradeConfirm', btn, opts),
 #},[_('Continue')]);
+#<<HOOK>>
 #
 #############################
 
