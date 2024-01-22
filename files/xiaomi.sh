@@ -106,11 +106,22 @@ fi_flash_images() {
 		fi
 	fi
 
-	if [ "$FI_RESTORE_ROOTFS2" = "true" ] && [ -n "$FI_RESTORE_NVRAM" ]; then
-		eval "$FI_RESTORE_NVRAM"
-	fi
-	if [ "$FI_RESTORE_UBIFS2" = "true" ]; then
-		eval "$FI_RESTORE_NVRAM"
+	if [ "$FI_RESTORE_ROOTFS2" = "true" ] || [ "$FI_RESTORE_UBIFS2" = "true" ]; then
+		if [ -n "$FI_RESTORE_NVRAM" ]; then
+			eval "$FI_RESTORE_NVRAM"
+		fi
+		#fw_setenv boot_fw1 'run boot_rd_img2;bootm'
+		fw_setenv flag_try_sys1_failed 0
+		fw_setenv flag_try_sys2_failed 0
+		fw_setenv flag_boot_rootfs 0
+		fw_setenv flag_last_success 0
+		fw_setenv flag_boot_success 1
+		fw_setenv flag_ota_reboot 0
+		fw_setenv ssh_en 1
+		fw_setenv uart_en 1
+		fw_setenv boot_wait on
+		fw_setenv bootdelay 3
+		fw_setenv bootmenu_delay 5
 	fi
 
 	fi_mtd_write "$FI_KERNEL_PART" "$kernel_offset" "$kernel_size" || {
