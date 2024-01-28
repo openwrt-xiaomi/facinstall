@@ -9,6 +9,7 @@ fi_init_board() {
 	case "$FI_BOARD" in
 	asus,rt-ax52|\
 	asus,rt-ax59u|\
+	asus,rt-ax89x|\
 	asus,tuf-ax4200|\
 	asus,tuf-ax6000)
 		FI_SCRIPT="asus.sh"
@@ -40,6 +41,7 @@ fi_init_board() {
 	case "$FI_BOARD" in
 	asus,rt-ax52|\
 	asus,rt-ax59u|\
+	asus,rt-ax89x|\
 	asus,tuf-ax4200|\
 	asus,tuf-ax6000)
 		CI_UBIPART="UBI_DEV"
@@ -84,6 +86,10 @@ fi_init_board() {
 	asus,rt-ax59u)
 		FI_HW_MODEL="RT-AX59U"
 		FI_KERNEL_SIZE=0x45fe000
+		;;
+	asus,rt-ax89x)
+		FI_HW_MODEL="RT-AX89U"
+		FI_KERNEL_SIZE=0x6406000
 		;;
 	asus,tuf-ax4200)
 		FI_HW_MODEL="TUF-AX4200"
