@@ -82,10 +82,12 @@ fi_init_board() {
 	asus,rt-ax52)
 		FI_HW_MODEL="RT-AX52"
 		FI_KERNEL_SIZE=0x45fe000
+		FI_DEL_TRX_HEADER=1
 		;;
 	asus,rt-ax59u)
 		FI_HW_MODEL="RT-AX59U"
 		FI_KERNEL_SIZE=0x45fe000
+		FI_DEL_TRX_HEADER=1
 		;;
 	asus,rt-ax89x)
 		FI_HW_MODEL="RT-AX89U"
@@ -94,10 +96,12 @@ fi_init_board() {
 	asus,tuf-ax4200)
 		FI_HW_MODEL="TUF-AX4200"
 		FI_KERNEL_SIZE=0x45fe000
+		FI_DEL_TRX_HEADER=1
 		;;
 	asus,tuf-ax6000)
 		FI_HW_MODEL="TUF-AX6000"
 		FI_KERNEL_SIZE=0x45fe000
+		FI_DEL_TRX_HEADER=1
 		;;
 	xiaomi,mi-router-3-pro)
 		FI_HDR_MODEL_ID=10

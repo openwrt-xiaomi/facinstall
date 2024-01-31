@@ -14,6 +14,7 @@ FI_UBIFS_PART="UBI_DEV"
 FI_KERNEL_VOL="linux"
 FI_ROOTFS_VOL="rootfs"
 FI_KERNEL_SIZE=
+FI_DEL_TRX_HEADER=
 
 
 fi_get_vol_id_by_name() {
@@ -79,7 +80,9 @@ fi_platform_do_upgrade() {
 
 		skip_size=0
 		if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_TRX" ]; then
-			skip_size=64
+			if [ "$FI_DEL_TRX_HEADER" = "1" ]; then
+				skip_size=64
+			fi
 		fi
 		
 		filog "Flash data to '$FI_KERNEL_VOL' (dev: $kernel_vol_dev)..."
