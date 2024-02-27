@@ -402,6 +402,7 @@ fi_platform_init() {
 fi_platform_check_image() {
 	local modelid_list
 	local modelid
+	local kpart_size
 	local kernel_size
 	local rootfs_offset
 	local img_crc_orig  img_crc_calc
@@ -452,6 +453,17 @@ fi_platform_check_image() {
 		xx=$( grep -c -F "$FI_BOARD" "$FI_IMAGE" )
 		if [ "$xx" -lt 1 ]; then
 			fierr "Incorrect FIT-image! Model not found!" 
+			return 1
+		fi
+		kpart_size=$( fi_get_part_size "$FI_KERNEL_PART" )
+		kernel_size=$( fi_get_uint32_at 4 "be" )
+		rootfs_offset=$( fi_get_rootfs_offset "$kernel_size" )
+		if [ -z "$rootfs_offset" ]; then
+			fierr "Cannot find ubinized rootfs in the factory image!"
+			return 1
+		fi
+		if [ "$rootfs_offset" != "$kpart_size" ]; then
+			fierr "Unsupported kernel size into factory image!"
 			return 1
 		fi
 		FI_LOGMODE=2
