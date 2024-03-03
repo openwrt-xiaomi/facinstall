@@ -382,6 +382,7 @@ fi_platform_do_upgrade() {
 }
 
 fi_platform_init() {
+	local krn_size  ldr_size
 	FI_FIT_IMG=
 	FI_UBI_IMG=
 	FI_KERNEL_PART=$CI_KERNPART
@@ -392,6 +393,15 @@ fi_platform_init() {
 	fi
 	if [ -n "$CI_ROOT_UBIPART" ]; then
 		FI_ROOTFS_PART=$CI_ROOT_UBIPART
+	fi
+	krn_size=$( fi_get_part_size "$FI_KERNEL_PART" )
+	if [ "$krn_size" = "0" ]; then
+		ldr_size=$( fi_get_part_size "ubi-loader" )
+		if [ "$ldr_size" = "0" ]; then
+			fierr "cannot find mtd partition for kernel image"
+			return 1
+		fi
+		FI_KERNEL_PART="ubi-loader"
 	fi
 	[ -z "$FI_IMAGE_SIZE" ] && return 1
 	[ "$FI_IMAGE_SIZE" -lt 1000000 ] && return 1

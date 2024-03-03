@@ -226,7 +226,7 @@ fi_get_part_size() {
 	local part_name=$1
 	local part
 	local mtd_size_hex
-	part=$( grep "\"$part_name\"" < "/proc/mtd" )
+	part=$( cat /proc/mtd | grep "\"$part_name\"" 2>/dev/null )
 	if [ -z "$part" ]; then
 		mtd_size_hex=0
 	else
