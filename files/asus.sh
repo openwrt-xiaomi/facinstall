@@ -15,6 +15,7 @@ FI_KERNEL_VOL="linux"
 FI_ROOTFS_VOL="rootfs"
 FI_KERNEL_SIZE=
 FI_DEL_TRX_HEADER=
+FI_TRX_VER=3
 
 
 fi_get_vol_id_by_name() {
@@ -174,19 +175,26 @@ fi_platform_check_image() {
 	fi
 
 	if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_TRX" ]; then
-		xx=$( fi_get_hexdump_at 64 4 )
-		if [ "$xx" != "$FI_MAGIC_FIT" ]; then
-			fierr "Incorrect stock firmware! FIT image not found!"
-			return 1
+		xx=$( fi_get_hexdump_at 60 1 )
+		if [ "$xx" = "a9" ]; then
+			FI_TRX_VER=2
+		else		
+			xx=$( fi_get_hexdump_at 64 4 )
+			if [ "$xx" != "$FI_MAGIC_FIT" ]; then
+				fierr "Incorrect stock firmware! FIT image not found!"
+				return 1
+			fi
 		fi
 		#if [ "$FI_INITRAMFS_MODE" != "1" ]; then
 		#	fierr "TRX images can only be flashed in InitRamFs mode!"
 		#	return 1
 		#fi
-		xx=$( grep -c -F "rootfs-1" "$FI_IMAGE" )
-		if [ "$xx" == "0" ]; then
-			fierr "Incorrect TRX image! Part 'rootfs-1' not found!"
-			return 1
+		if [ "$FI_TRX_VER" = 3 ]; then
+			xx=$( grep -c -F "rootfs-1" "$FI_IMAGE" )
+			if [ "$xx" == "0" ]; then
+				fierr "Incorrect TRX image! Part 'rootfs-1' not found!"
+				return 1
+			fi
 		fi
 		if [ "$FI_STAGE" != "2" ]; then 
 			err=$( fi_check_uimage_crc $FI_IMAGE 0 )
