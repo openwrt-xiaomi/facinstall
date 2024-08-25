@@ -8,6 +8,7 @@ fi_init_board() {
 	
 	case "$FI_BOARD" in
 	asus,rt-ax52|\
+	asus,rt-ax57m|\
 	asus,rt-ax59u|\
 	asus,rt-ax89x|\
 	asus,tuf-ax4200|\
@@ -40,6 +41,7 @@ fi_init_board() {
 	
 	case "$FI_BOARD" in
 	asus,rt-ax52|\
+	asus,rt-ax57m|\
 	asus,rt-ax59u|\
 	asus,rt-ax89x|\
 	asus,tuf-ax4200|\
@@ -81,6 +83,11 @@ fi_init_board() {
 	case "$FI_BOARD" in
 	asus,rt-ax52)
 		FI_HW_MODEL="RT-AX52"
+		FI_KERNEL_SIZE=0x45fe000
+		FI_DEL_TRX_HEADER=1
+		;;
+	asus,rt-ax57m)
+		FI_HW_MODEL="RT-AX57M"
 		FI_KERNEL_SIZE=0x45fe000
 		FI_DEL_TRX_HEADER=1
 		;;
