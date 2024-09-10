@@ -43,12 +43,16 @@ fi_init_board() {
 	asus,rt-ax52|\
 	asus,rt-ax57m|\
 	asus,rt-ax59u|\
-	asus,rt-ax89x|\
 	asus,tuf-ax4200|\
 	asus,tuf-ax6000)
 		CI_UBIPART="UBI_DEV"
 		CI_KERNPART="linux"
 		CI_ROOTPART="rootfs"
+		;;
+	asus,rt-ax89x)
+		CI_UBIPART="UBI_DEV"
+		CI_KERNPART="linux"
+		CI_ROOTPART="jffs2"
 		;;
 	xiaomi,mi-router-3-pro|\
 	xiaomi,mi-router-3g|\

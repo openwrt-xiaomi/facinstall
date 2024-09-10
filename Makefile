@@ -5,8 +5,8 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=facinstall
-PKG_VERSION:=1.9
-PKG_RELEASE:=20240825
+PKG_VERSION:=2.0
+PKG_RELEASE:=20240910
 
 PKG_MAINTAINER:=remittor <remittor@gmail.com>
 PKG_LICENSE:=MIT

@@ -65,7 +65,8 @@ fi_platform_do_upgrade() {
 		
 		if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_TRX" ]; then
 			# for revert to stock firmware
-			ubirmvol /dev/ubi0 -N jffs2
+			ubirmvol /dev/ubi0 -N rootfs  2> /dev/null
+			ubirmvol /dev/ubi0 -N jffs2   2> /dev/null
 			ubirmvol /dev/ubi0 -N "$FI_KERNEL_VOL"
 			ubimkvol /dev/ubi0 -N "$FI_KERNEL_VOL" -s "$FI_KERNEL_SIZE"
 		else
