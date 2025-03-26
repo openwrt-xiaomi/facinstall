@@ -152,7 +152,7 @@ fi_init_board() {
 		;;
 	xiaomi,mi-router-ax3000t|\
 	xiaomi,mi-router-ax3000t-stock)
-		FI_HDR_MODEL_ID=75
+		FI_HDR_MODEL_ID=75,88
 		FI_RESTORE_NVRAM="fw_setenv boot_fw1 'run boot_rd_img2;bootm'"
 		;;
 	xiaomi,redmi-router-ax6000|\
