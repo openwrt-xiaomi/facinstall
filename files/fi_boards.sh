@@ -12,7 +12,8 @@ fi_init_board() {
 	asus,rt-ax59u|\
 	asus,rt-ax89x|\
 	asus,tuf-ax4200|\
-	asus,tuf-ax6000)
+	asus,tuf-ax6000|\
+	asus,zenwifi-bt8)
 		FI_SCRIPT="asus.sh"
 		;;
 	xiaomi,mi-router-3-pro|\
@@ -44,7 +45,8 @@ fi_init_board() {
 	asus,rt-ax57m|\
 	asus,rt-ax59u|\
 	asus,tuf-ax4200|\
-	asus,tuf-ax6000)
+	asus,tuf-ax6000|\
+	asus,zenwifi-bt8)
 		CI_UBIPART="UBI_DEV"
 		CI_KERNPART="linux"
 		CI_ROOTPART="rootfs"
@@ -112,6 +114,11 @@ fi_init_board() {
 	asus,tuf-ax6000)
 		FI_HW_MODEL="TUF-AX6000"
 		FI_KERNEL_SIZE=0x45fe000
+		FI_DEL_TRX_HEADER=1
+		;;
+	asus,zenwifi-bt8)
+		FI_HW_MODEL="BT8"
+		FI_KERNEL_SIZE=0x40e8000
 		FI_DEL_TRX_HEADER=1
 		;;
 	xiaomi,mi-router-3-pro)
