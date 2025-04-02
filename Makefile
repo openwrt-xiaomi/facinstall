@@ -32,32 +32,16 @@ define Build/Compile
 endef
 
 define Package/$(PKG_NAME)/install
-	$(INSTALL_DIR) $(1)/etc/config
-	$(INSTALL_DATA) ./files/$(PKG_NAME).config $(1)/etc/config/$(PKG_NAME)
-
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/etc/init.d/$(PKG_NAME)
-
+	$(INSTALL_BIN) ./files/$(PKG_NAME).init      $(1)/etc/init.d/$(PKG_NAME)
 	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
-	$(INSTALL_BIN) ./files/$(PKG_NAME).sh   $(1)/lib/upgrade/$(PKG_NAME)/$(PKG_NAME).sh
-
-	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
-	$(INSTALL_BIN) ./files/functions.sh     $(1)/lib/upgrade/$(PKG_NAME)/functions.sh
-
-	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
-	$(INSTALL_BIN) ./files/fi_boards.sh     $(1)/lib/upgrade/$(PKG_NAME)/fi_boards.sh
-
-	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
+	$(INSTALL_BIN) ./files/$(PKG_NAME).sh        $(1)/lib/upgrade/$(PKG_NAME)/$(PKG_NAME).sh
+	$(INSTALL_BIN) ./files/functions.sh          $(1)/lib/upgrade/$(PKG_NAME)/functions.sh
+	$(INSTALL_BIN) ./files/fi_boards.sh          $(1)/lib/upgrade/$(PKG_NAME)/fi_boards.sh
 	$(INSTALL_BIN) ./files/validate_fw_image.sh  $(1)/lib/upgrade/$(PKG_NAME)/validate_fw_image.sh
-
-	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
 	$(INSTALL_BIN) ./files/fi_do_stage2.sh       $(1)/lib/upgrade/$(PKG_NAME)/fi_do_stage2.sh
-
-	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
-	$(INSTALL_BIN) ./files/xiaomi.sh    $(1)/lib/upgrade/$(PKG_NAME)/xiaomi.sh
-
-	$(INSTALL_DIR) $(1)/lib/upgrade/$(PKG_NAME)
-	$(INSTALL_BIN) ./files/asus.sh      $(1)/lib/upgrade/$(PKG_NAME)/asus.sh
+	$(INSTALL_BIN) ./files/xiaomi.sh             $(1)/lib/upgrade/$(PKG_NAME)/xiaomi.sh
+	$(INSTALL_BIN) ./files/asus.sh               $(1)/lib/upgrade/$(PKG_NAME)/asus.sh
 endef
 
 define Package/$(PKG_NAME)/postinst
