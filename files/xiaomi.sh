@@ -510,7 +510,7 @@ fi_platform_check_image() {
 			return 1
 		fi
 		if [ "$FI_STAGE" = "2" ] || is_sysupgrade_test ; then
-			filog "Check image CRC..."
+			_filog "Check image CRC..."
 			img_crc_orig=$( fi_get_uint32_at 8 )
 			img_crc_orig=$( printf '%08x' "$(( img_crc_orig ^ 0xFFFFFFFF ))" )
 			img_crc_calc=$( fi_get_file_crc32 "$FI_IMAGE" 12 )
