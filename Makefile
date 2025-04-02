@@ -24,10 +24,6 @@ define Package/$(PKG_NAME)/description
 Installer for factory and OEM images
 endef
 
-define Package/$(PKG_NAME)/conffiles
-/etc/config/$(PKG_NAME)
-endef
-
 define Build/Compile
 endef
 
