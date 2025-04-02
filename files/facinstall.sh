@@ -156,7 +156,7 @@ fi_patch_flash_js() {
 	filog 'File "flash.js" succefully patched'
 	rm -f /tmp/luci-index*
 	rm -rf /tmp/luci-modulecache
-	luci-reload
+	[ -f "/sbin/luci-reload" ] && /sbin/luci-reload
 	return 0
 }
 
