@@ -46,23 +46,23 @@ FI_MAGIC_HSQS="68737173"            # "hsqs"
 
 
 filog() {
-	logger -t $FI_LOGPREF "$@"
-	if [ "$FI_LOGMODE" = "1" ]; then
-		echo "$@" >&1
+	if [ -e /dev/kmsg -a "$FI_STAGE" != "2" ] ; then
+		echo "$FI_LOGPREF: $*" > /dev/kmsg
+	else
+		logger -t $FI_LOGPREF "$@" &> /dev/null
 	fi
-	if [ "$FI_LOGMODE" = "2" ]; then
-		echo "$@. " >&2
-	fi
+	[ "$FI_LOGMODE" = "1" ] && echo "$* " >&1
+	[ "$FI_LOGMODE" = "2" ] && echo "$*. " >&2
 }
  
 fierr() {
-	logger -t $FI_LOGPREF -p err "$@"
-	if [ "$FI_LOGMODE" = "1" ]; then
-		echo "ERROR: $*. " >&2
+	if [ -e /dev/kmsg -a "$FI_STAGE" != "2" ]; then
+		echo "$FI_LOGPREF: ERROR: $*" > /dev/kmsg
+	else
+		logger -t $FI_LOGPREF -p err "$@" &> /dev/null
 	fi
-	if [ "$FI_LOGMODE" = "2" ]; then
-		echo "ERROR: $*. " >&2
-	fi
+	[ "$FI_LOGMODE" = "1" ] && echo "ERROR: $* " >&2
+	[ "$FI_LOGMODE" = "2" ] && echo "ERROR: $*. " >&2
 }
 
 fidie() {
