@@ -26,7 +26,7 @@ fi_install_check_hook() {
 	hookname=$( basename $FI_CHECK_HOOK_FN )
 	xx=$( grep -c -F "$hookname" "$FI_CHECK_ORIG_FN" )
 	if [ "$xx" != "0" ]; then
-		filog 'File "validate_firmware_image" already patched'
+		#filog 'File "validate_firmware_image" already patched'
 		return 0
 	fi
 	cmd="[ -f $FI_CHECK_HOOK_FN ] && . $FI_CHECK_HOOK_FN "'"$1"'
@@ -60,7 +60,7 @@ fi_install_ramfs_hook() {
 	fi
 	xx=$( grep -c -F "$FI_RAMFS_HOOK_FLAG" "$FI_RAMFS_HOOK_FN" )
 	if [ "$xx" != "0" ]; then
-		filog 'File "stage2" already patched'
+		#filog 'File "stage2" already patched'
 		return 0
 	fi
 	cmd="install_file $FI_PROGDIR/<<STAR>>.sh"
@@ -95,7 +95,7 @@ fi_install_flash_hook() {
 	hookname=$( basename $FI_FLASH_HOOK_FN )
 	xx=$( grep -c -F "$hookname" "$FI_FLASH_ORIG_FN" )
 	if [ "$xx" != "0" ]; then
-		filog 'File "do_stage2" already patched'
+		#filog 'File "do_stage2" already patched'
 		return 0
 	fi
 	cmd="[ -f $FI_FLASH_HOOK_FN ] && . $FI_FLASH_HOOK_FN"
@@ -130,7 +130,7 @@ fi_patch_flash_js() {
 	fi
 	xx=$( grep -c -F "$FI_FLASH_JAVA_FLAG" "$FI_FLASH_JAVA_FN" )
 	if [ "$xx" != "0" ]; then
-		filog 'File "flash.js" already patched'
+		#filog 'File "flash.js" already patched'
 		return 0
 	fi
 	cmd1="if (res[1].hasOwnProperty('$FI_FLASH_JAVA_FLAG')) {"
@@ -177,14 +177,17 @@ fi_remove_all_hooks() {
 
 fi_install_upgrade_hooks() {
 	filog "install_upgrade_hooks (version: $FI_VERSION)"
-	fi_install_check_hook
-	[ $? != 0 ] && return 1
-	fi_install_ramfs_hook
-	[ $? != 0 ] && { fi_remove_all_hooks ; return 1; }
-	fi_install_flash_hook
-	[ $? != 0 ] && { fi_remove_all_hooks ; return 1; }
-	fi_patch_flash_js
-	return 0
+	if fi_install_check_hook ; then
+		if fi_install_ramfs_hook ; then
+			if fi_install_flash_hook ; then
+				fi_patch_flash_js
+				filog "all files succefully patched!"
+				return 0
+			fi
+		fi
+	fi
+	fi_remove_all_hooks
+	return 1
 }
 
 fi_remove_upgrade_hooks() {
