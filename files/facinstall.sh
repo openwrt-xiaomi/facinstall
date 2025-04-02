@@ -176,7 +176,7 @@ fi_remove_all_hooks() {
 }
 
 fi_install_upgrade_hooks() {
-	filog "fi_install_upgrade_hooks"
+	filog "install_upgrade_hooks (version: $FI_VERSION)"
 	fi_install_check_hook
 	[ $? != 0 ] && return 1
 	fi_install_ramfs_hook
@@ -188,7 +188,7 @@ fi_install_upgrade_hooks() {
 }
 
 fi_remove_upgrade_hooks() {
-	filog "fi_remove_upgrade_hooks"
+	filog "remove_upgrade_hooks (version: $FI_VERSION)"
 	fi_remove_all_hooks
 	return 0
 }

@@ -15,6 +15,7 @@ fi
 FI_PROGNAME="facinstall"
 FI_PROGDIR="/lib/upgrade/$FI_PROGNAME"
 FI_LOGPREF=$FI_PROGNAME
+FI_VERSION=
 
 FI_CHECK_ORIG_FN="/usr/libexec/validate_firmware_image"
 FI_CHECK_HOOK_FN="$FI_PROGDIR/validate_fw_image.sh"

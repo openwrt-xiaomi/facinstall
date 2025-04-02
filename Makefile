@@ -42,6 +42,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_BIN) ./files/fi_do_stage2.sh       $(1)/lib/upgrade/$(PKG_NAME)/fi_do_stage2.sh
 	$(INSTALL_BIN) ./files/xiaomi.sh             $(1)/lib/upgrade/$(PKG_NAME)/xiaomi.sh
 	$(INSTALL_BIN) ./files/asus.sh               $(1)/lib/upgrade/$(PKG_NAME)/asus.sh
+	$(SED) "s/^FI_VERSION=/FI_VERSION=$(PKG_VERSION)/" $(1)/lib/upgrade/$(PKG_NAME)/functions.sh
 endef
 
 define Package/$(PKG_NAME)/postinst

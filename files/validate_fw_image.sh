@@ -8,7 +8,7 @@
 FI_IMAGE=$1
 export FI_LOGMODE=0
 export FI_STAGE=0
-filog "call: validate_fw_image.sh $FI_IMAGE"
+filog "version: $FI_VERSION  image: $FI_IMAGE"
 fi_set_image $FI_IMAGE
 
 if [ "$FI_IMAGE_MAGIC" = $FI_MAGIC_SYSUPG ]; then
