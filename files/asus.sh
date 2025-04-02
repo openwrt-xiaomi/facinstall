@@ -197,7 +197,8 @@ fi_platform_check_image() {
 				return 1
 			fi
 		fi
-		if [ "$FI_STAGE" != "2" ]; then 
+		if [ "$FI_STAGE" = "2" ] || is_sysupgrade_test ; then 
+			filog "Check image CRC..."
 			err=$( fi_check_uimage_crc $FI_IMAGE 0 )
 			if [ -n "$err" ]; then
 				fierr "$err"

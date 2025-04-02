@@ -377,4 +377,22 @@ fi_check_tar() {
 	fi
 	return 0
 }
-  
+
+function get_parent_proc_cmdline
+{
+	local pid=$$
+	local ppid=$( cut -d' ' -f4  /proc/$pid/stat )
+	local cmdline=$( cat /proc/$ppid/cmdline | /bin/busybox tr '\0' ' ' )
+	echo -n "$cmdline"
+}
+
+function is_sysupgrade_test
+{
+	local parent_cmdline=$( get_parent_proc_cmdline )
+	if echo "$parent_cmdline" | grep -q '/sbin/sysupgrade ' ; then
+		if echo "$parent_cmdline" | grep -q ' --test' ; then
+			return 0
+		fi
+	fi
+	return 1
+}
