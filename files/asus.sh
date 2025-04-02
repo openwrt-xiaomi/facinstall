@@ -170,7 +170,7 @@ fi_platform_check_image() {
 			fierr "Incorrect fit image! Found 'rootfs-1' part!"
 			return 1
 		fi
-		FI_LOGMODE=2
+		export FI_LOGMODE=2
 		filog "Detect FIT initramfs image"
 		return 0
 	fi
@@ -204,7 +204,7 @@ fi_platform_check_image() {
 				return 1
 			fi
 		fi
-		FI_LOGMODE=2
+		export FI_LOGMODE=2
 		filog "Detect TRX stock image"
 		return 0
 	fi

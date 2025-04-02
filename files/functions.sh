@@ -5,11 +5,16 @@
 
 . /lib/functions.sh
 
-FI_DEBUG=0
+if [ -z "$FI_DEBUG" ]; then
+	export FI_DEBUG=0
+	export FI_LOGMODE=0
+	export FI_STAGE=
+	export FI_SCRIPT=
+fi
+
 FI_PROGNAME="facinstall"
 FI_PROGDIR="/lib/upgrade/$FI_PROGNAME"
 FI_LOGPREF=$FI_PROGNAME
-FI_LOGMODE=0
 
 FI_CHECK_ORIG_FN="/usr/libexec/validate_firmware_image"
 FI_CHECK_HOOK_FN="$FI_PROGDIR/validate_fw_image.sh"
@@ -23,8 +28,6 @@ FI_FLASH_HOOK_FN="$FI_PROGDIR/fi_do_stage2.sh"
 FI_FLASH_JAVA_FN="/www/luci-static/resources/view/system/flash.js"
 FI_FLASH_JAVA_FLAG=$FI_PROGNAME
 
-FI_STAGE=
-FI_SCRIPT=
 FI_PLATFORM=
 FI_BOARD=$( board_name )
 FI_UIMAGE_SUPPORT=

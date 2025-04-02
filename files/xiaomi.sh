@@ -450,7 +450,7 @@ fi_platform_check_image() {
 			fierr "Cannot find ubinized rootfs in the firmware image"
 			return 1
 		fi
-		FI_LOGMODE=2
+		export FI_LOGMODE=2
 		filog "Detect uImage with ubinized rootfs"
 		return 0
 	fi
@@ -476,7 +476,7 @@ fi_platform_check_image() {
 			fierr "Unsupported kernel size into factory image!"
 			return 1
 		fi
-		FI_LOGMODE=2
+		export FI_LOGMODE=2
 		filog "Detect FIT-image"
 		return 0
 	fi
@@ -491,7 +491,7 @@ fi_platform_check_image() {
 			fierr "Incorrect UBI-image! Model not found!" 
 			return 1
 		fi
-		FI_LOGMODE=2
+		export FI_LOGMODE=2
 		filog "Detect UBI-image"
 		return 0
 	fi
@@ -518,7 +518,7 @@ fi_platform_check_image() {
 				return 1
 			fi
 		fi
-		FI_LOGMODE=2
+		export FI_LOGMODE=2
 		filog "Detect HDR1-image"
 		return 0
 	fi
@@ -526,7 +526,7 @@ fi_platform_check_image() {
 	if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_SYSUPG" ]; then
 		fi_check_tar $FI_IMAGE || return 1
 		if [ "$FI_HOOK_TARSYSUPG" = "true" ]; then
-			FI_LOGMODE=2
+			export FI_LOGMODE=2
 			filog "Detect sysupgrade TAR-image"
 			return 0
 		fi
