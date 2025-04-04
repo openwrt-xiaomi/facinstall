@@ -395,15 +395,24 @@ function get_parent_proc_cmdline
 {
 	local pid=$$
 	local ppid=$( cut -d' ' -f4  /proc/$pid/stat )
-	local cmdline=$( cat /proc/$ppid/cmdline | /bin/busybox tr '\0' ' ' )
+	local cmdline=
+	if [ "$ppid" != "0" ]; then
+		if [ -e "/proc/$ppid/cmdline" ]; then
+			cmdline=$( cat /proc/$ppid/cmdline | /bin/busybox tr '\0' ' ' )
+		fi
+	fi
 	echo -n "$cmdline"
 }
 
 function is_sysupgrade_test
 {
 	local parent_cmdline=$( get_parent_proc_cmdline )
-	if echo "$parent_cmdline" | grep -q '/sbin/sysupgrade ' ; then
-		if echo "$parent_cmdline" | grep -q ' --test' ; then
+	[ -z "$parent_cmdline" ] && return 1
+	if echo "$parent_cmdline" | grep -qF '/sbin/sysupgrade ' ; then
+		if echo "$parent_cmdline" | grep -qF ' --test' ; then
+			return 0
+		fi
+		if echo "$parent_cmdline" | grep -qF ' -T ' ; then
 			return 0
 		fi
 	fi
