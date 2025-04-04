@@ -112,6 +112,53 @@ fi_install_flash_hook() {
 }
 
 ############################# /www/luci-static/resources/view/system/flash.js
+#	L.env.rpctimeout = 75;                           # BUGFIX
+#	return callSystemValidateFirmwareImage('/tmp/firmware.bin')
+#		.then(function(res) { return [ reply, res ]; });
+#
+#############################
+#	.catch(function(e) { ui.addNotification(null, E('p', e.message)) })
+#	.finally(L.bind(function(btn) {
+#		L.env.rpctimeout = 20;                       # BUGFIX
+#		btn.firstChild.data = _('Flash image...');
+#	}, this, ev.target));
+#
+#############################
+#	args.push('/tmp/firmware.bin');
+#	L.env.rpctimeout = 75;                           # BUGFIX
+#
+#	/* Currently the sysupgrade rpc call will not return, hence no promise handling */
+#	fs.exec('/sbin/sysupgrade', args);
+#
+#############################
+
+function fi_patch_flash_js_bugfix
+{
+	local cmd
+	local trg
+	if [ ! -f "$FI_FLASH_JAVA_FN" ]; then
+		return 0
+	fi
+	if grep -qF "L.env.rpctimeout = " $FI_FLASH_JAVA_FN ; then
+		#filog 'File "flash.js" already patched'
+		return 0
+	fi
+	trg="return callSystemValidateFirmwareImage("
+	cmd="\n L.env.rpctimeout = 75; \n $trg"
+	sed -i "s/$trg/$cmd/g" $FI_FLASH_JAVA_FN
+
+	trg=".finally(L.bind(function(btn){"
+	cmd="$trg\n L.env.rpctimeout = 20; \n"
+	sed -i "s/$trg/$cmd/g" $FI_FLASH_JAVA_FN
+
+	trg=".push('/tmp/firmware.bin');"
+	cmd="$trg\n L.env.rpctimeout = 75; \n"
+	sed -i "s#$trg#$cmd#g" $FI_FLASH_JAVA_FN
+	
+	return 0
+}
+
+############################# /www/luci-static/resources/view/system/flash.js
 #var cntbtn = E('button', {
 #	'class': 'btn cbi-button-action important',
 #	'click': ui.createHandlerFn(this, 'handleSysupgradeConfirm', btn, opts),
@@ -154,6 +201,7 @@ fi_patch_flash_js() {
 		fierr "Fail on patch file $FI_FLASH_JAVA_FN"
 		return 1
 	fi
+	fi_patch_flash_js_bugfix
 	filog 'File "flash.js" successfully patched'
 	rm -f /tmp/luci-index*
 	rm -rf /tmp/luci-modulecache
@@ -173,6 +221,7 @@ fi_remove_all_hooks() {
 	sed -i "/$hookname/d" $FI_FLASH_ORIG_FN
 	
 	sed -i "/$FI_FLASH_JAVA_FLAG/d" $FI_FLASH_JAVA_FN
+	sed -i "/L.env.rpctimeout = /d" $FI_FLASH_JAVA_FN
 	sed -i "s/\n\n\n\n/\n/g"  $FI_FLASH_JAVA_FN
 }
 
