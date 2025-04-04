@@ -40,9 +40,24 @@ fi_get_ubi_vol_dev() {
 	return 1
 }
 
+function fi_remove_ubiblock
+{
+	local ubivol="$1"
+	local ubiblk="ubiblock${ubivol:3}"
+	if [ -e "/dev/$ubiblk" ]; then
+		umount "/dev/$ubiblk" 2>/dev/null && _filog "unmounted /dev/$ubiblk" || :
+		if ! ubiblock -r "/dev/$ubivol"; then
+			_fierr "cannot remove $ubiblk"
+			return 1
+		fi
+	fi
+}
+
 fi_platform_do_upgrade() {
 	local fit_offset=0
 	local kernel_vol_dev
+	local rootfs_vol_dev
+	local datafs_vol_dev
 	local skip_size=0
 
 	if ! fi_platform_check_image; then
@@ -58,6 +73,14 @@ fi_platform_do_upgrade() {
 		kernel_vol_dev=$( fi_get_ubi_vol_dev "$FI_KERNEL_VOL" )
 		if [ -z "$kernel_vol_dev" ]; then
 			fidie "cannot found ubi volume with name '$FI_KERNEL_VOL'"
+		fi
+		rootfs_vol_dev=$( fi_get_ubi_vol_dev "$FI_ROOTFS_VOL" )
+		if [ -n "$rootfs_vol_dev" ]; then
+			fi_remove_ubiblock "$rootfs_vol_dev"
+		fi
+		datafs_vol_dev=$( fi_get_ubi_vol_dev "rootfs_data" )
+		if [ -n "$datafs_vol_dev" ]; then
+			fi_remove_ubiblock "$datafs_vol_dev"
 		fi
 
 		ubirmvol /dev/ubi0 -N "$FI_ROOTFS_VOL" 2> /dev/null
