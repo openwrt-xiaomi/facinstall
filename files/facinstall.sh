@@ -121,7 +121,7 @@ fi_install_flash_hook() {
 #############################
 
 fi_patch_flash_js() {
-	local cmd  cmd1 cmd2 cmd3 cmd4 cmd5 cmd6 cmd7 cmd8 cmd9 cmdA
+	local cmd
 	local dst
 	local xx
 	if [ ! -f "$FI_FLASH_JAVA_FN" ]; then
@@ -133,17 +133,18 @@ fi_patch_flash_js() {
 		#filog 'File "flash.js" already patched'
 		return 0
 	fi
-	cmd1="if (res[1].hasOwnProperty('$FI_FLASH_JAVA_FLAG')) {"
-	cmd2="  if (is_valid) {"
-	cmd3="    body.push(E('p',{'class':'alert-message info'},"
-	cmd4="      ['$FI_FLASH_JAVA_FLAG: ',res[2].stderr?res[2].stderr:'']"
-	cmd5="    ));"
-	cmd6="    body.push(E('hr'));"
-	cmd7="  } else {"
-	cmd8="    cntbtn.disabled=true;"
-	cmd9="  }"
-	cmdA="};"
-	cmd="$cmd1$cmd2$cmd3$cmd4$cmd5$cmd6$cmd7$cmd8$cmd9$cmdA"
+	cmd=" if (res[1].hasOwnProperty('$FI_FLASH_JAVA_FLAG')) {
+	        if (is_valid) {
+	          body.push(E('p',{'class':'alert-message info'},
+	            ['$FI_FLASH_JAVA_FLAG: ',res[2].stderr?res[2].stderr:'']
+	          ));
+	          body.push(E('hr'));
+	        } else {
+	          cntbtn.disabled=true;
+	        }
+	      };"
+	cmd=$( echo -n "$cmd" | tr '\n' ' ' )
+	cmd=$( echo -n "$cmd" | tr '\t' ' ' )
 	cmd=$( fi_sed_path "$cmd" )
 	dst="},[_('Continue')]);"
 	dst=$( fi_sed_path "$dst" )
