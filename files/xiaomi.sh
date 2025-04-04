@@ -367,7 +367,7 @@ fi_platform_do_upgrade() {
 		fi_check_tar $FI_IMAGE || fidie "Incorrect TAR-sysupgrade image!"
 		filog "SysUpgrade start..."
 		if [ -n "$FI_KERNEL2_PART" ]; then
-			tar Oxf "$tar_file" "$board_dir/kernel" | mtd -f write - "$FI_KERNEL2_PART"
+			tar Oxf "$FI_IMAGE" "$board_dir/kernel" | mtd -f write - "$FI_KERNEL2_PART"
 			if [ $? != 0 ]; then
 				fidie "cannot flash partition '$FI_KERNEL2_PART'"
 			fi
