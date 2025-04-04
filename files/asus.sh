@@ -197,13 +197,14 @@ fi_platform_check_image() {
 				return 1
 			fi
 		fi
-		if [ "$FI_STAGE" = "2" ] || is_sysupgrade_test ; then 
+		if [ "$FI_STAGE" != "2" ] && is_runned_by_sysupgrade ; then
 			_filog "Check image CRC..."
 			err=$( fi_check_uimage_crc $FI_IMAGE 0 )
 			if [ -n "$err" ]; then
 				fierr "$err"
 				return 1
 			fi
+			_filog "Check image CRC: OK"
 		fi
 		export FI_LOGMODE=2
 		filog "Detect TRX stock image"

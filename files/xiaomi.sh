@@ -509,7 +509,7 @@ fi_platform_check_image() {
 			fierr "$err"
 			return 1
 		fi
-		if [ "$FI_STAGE" = "2" ] || is_sysupgrade_test ; then
+		if [ "$FI_STAGE" != "2" ] && is_runned_by_sysupgrade ; then
 			_filog "Check image CRC..."
 			img_crc_orig=$( fi_get_uint32_at 8 )
 			img_crc_orig=$( printf '%08x' "$(( img_crc_orig ^ 0xFFFFFFFF ))" )
@@ -518,6 +518,7 @@ fi_platform_check_image() {
 				fierr "HDR1 image has incorrect CRC32 checksum"
 				return 1
 			fi
+			_filog "Check image CRC: OK"
 		fi
 		export FI_LOGMODE=2
 		filog "Detect HDR1-image"

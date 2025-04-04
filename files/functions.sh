@@ -404,6 +404,22 @@ function get_parent_proc_cmdline
 	echo -n "$cmdline"
 }
 
+function is_runned_by_sysupgrade
+{
+	[ "$SAVE_CONFIG" != "" ] && return 0
+	return 1
+}
+
+function is_runned_by_sysupgrade2
+{
+	local parent_cmdline=$( get_parent_proc_cmdline )
+	[ -z "$parent_cmdline" ] && return 1
+	if echo "$parent_cmdline" | grep -qF '/sbin/sysupgrade ' ; then
+		return 0
+	fi
+	return 1
+}
+
 function is_sysupgrade_test
 {
 	local parent_cmdline=$( get_parent_proc_cmdline )
