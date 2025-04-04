@@ -37,7 +37,7 @@ fi_install_check_hook() {
 		fierr "Fail on patch file $FI_CHECK_ORIG_FN"
 		return 1
 	fi
-	filog 'File "validate_firmware_image" succefully patched'
+	filog 'File "validate_firmware_image" successfully patched'
 	return 0
 }
 
@@ -74,7 +74,7 @@ fi_install_ramfs_hook() {
 		fierr "Fail on patch file $FI_RAMFS_HOOK_FN"
 		return 1
 	fi
-	filog 'File "stage2" succefully patched'
+	filog 'File "stage2" successfully patched'
 	return 0
 }
 
@@ -107,7 +107,7 @@ fi_install_flash_hook() {
 		fierr "Fail on patch file $FI_FLASH_ORIG_FN"
 		return 1
 	fi
-	filog 'File "do_stage2" succefully patched'
+	filog 'File "do_stage2" successfully patched'
 	return 0
 }
 
@@ -154,7 +154,7 @@ fi_patch_flash_js() {
 		fierr "Fail on patch file $FI_FLASH_JAVA_FN"
 		return 1
 	fi
-	filog 'File "flash.js" succefully patched'
+	filog 'File "flash.js" successfully patched'
 	rm -f /tmp/luci-index*
 	rm -rf /tmp/luci-modulecache
 	[ -f "/sbin/luci-reload" ] && /sbin/luci-reload
@@ -182,7 +182,7 @@ fi_install_upgrade_hooks() {
 		if fi_install_ramfs_hook ; then
 			if fi_install_flash_hook ; then
 				fi_patch_flash_js
-				filog "all files succefully patched!"
+				filog "all files successfully patched!"
 				return 0
 			fi
 		fi
