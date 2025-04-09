@@ -96,7 +96,7 @@ fi_sed_path() {
 
 fi_set_image() {
 	FI_IMAGE=$1
-	FI_IMAGE_SIZE=$( wc -c "$FI_IMAGE" 2> /dev/null | awk '{print $1}' )
+	FI_IMAGE_SIZE=$( /bin/busybox stat -c '%s' "$FI_IMAGE" 2>/dev/null )
 	FI_IMAGE_MAGIC=
 	[ -z "$FI_IMAGE_SIZE" ] && return 1
 	[ "$FI_IMAGE_SIZE" -lt 1000000 ] && return 1
@@ -118,7 +118,7 @@ fi_get_uint8_at() {
 		filename=$FI_IMAGE
 		filesize=$FI_IMAGE_SIZE
 	else
-		filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+		filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	fi
 	[ $(( offset + 1 )) -gt "$filesize" ] && { echo ""; return; }
 	hex=$( dd if="$filename" skip="$offset" bs=1 count=1 2>/dev/null \
@@ -136,7 +136,7 @@ fi_get_uint32_at() {
 		filename=$FI_IMAGE
 		filesize=$FI_IMAGE_SIZE
 	else
-		filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+		filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	fi
 	[ $(( offset + 4 )) -gt "$filesize" ] && { echo ""; return; }
 	if [ "$endianness" = "be" ]; then
@@ -158,7 +158,7 @@ fi_get_hexdump_at() {
 		filename=$FI_IMAGE
 		filesize=$FI_IMAGE_SIZE
 	else
-		filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+		filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	fi
 	[ $(( offset + size )) -gt "$filesize" ] && { echo ""; return; }
 	dd if="$filename" skip="$offset" bs=1 count="$size" 2>/dev/null \
@@ -187,7 +187,7 @@ fi_get_file_crc32() {
 	local filesize
 	local count
 	[ -z "$offset" ] && offset=0
-	filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+	filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	offset=$( printf "%d" "$offset" )
 	if [ -z "$length" ]; then
 		length=$(( filesize - offset ))
@@ -209,7 +209,7 @@ fi_check_uimage_crc() {
 	local hdr_crc_orig   hdr_crc_calc
 	local imghdrfn
 	[ -z "$offset" ] && offset=0
-	filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+	filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	offset=$( printf "%d" "$offset" )
 	data_size=$( fi_get_uint32_at $(( offset + 12 )) "be" "$filename" )
 	total_size=$(( 64 + data_size ))
