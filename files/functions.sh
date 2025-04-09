@@ -90,8 +90,8 @@ fidie() {
 }
 
 fi_sed_path() {
-	local str=$( ( echo $1|sed -r 's/([\$\.\*\/\[\\^])/\\\1/g'|sed 's/[]]/\\]/g' )>&1 )
-	echo "$str"
+	local str=$( ( echo -n $1 | sed -r 's/([\$\.\*\/\[\\^])/\\\1/g' | sed 's/[]]/\\]/g' )>&1 )
+	echo -n "$str"
 }
 
 fi_set_image() {
@@ -120,7 +120,8 @@ fi_get_uint8_at() {
 	else
 		filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	fi
-	[ $(( offset + 1 )) -gt "$filesize" ] && { echo ""; return; }
+	[ -z "$filesize" ] && return
+	[ $(( offset + 1 )) -gt "$filesize" ] && return
 	hex=$( dd if="$filename" skip="$offset" bs=1 count=1 2>/dev/null \
 		| hexdump -v -e '"%02x"' )
 	printf "%d" 0x"$hex"
@@ -138,7 +139,8 @@ fi_get_uint32_at() {
 	else
 		filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	fi
-	[ $(( offset + 4 )) -gt "$filesize" ] && { echo ""; return; }
+	[ -z "$filesize" ] && return
+	[ $(( offset + 4 )) -gt "$filesize" ] && return
 	if [ "$endianness" = "be" ]; then
 		hex=$( dd if="$filename" skip="$offset" bs=1 count=4 2>/dev/null \
 			| hexdump -v -n 4 -e '1/1 "%02x"' )
@@ -160,7 +162,8 @@ fi_get_hexdump_at() {
 	else
 		filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
 	fi
-	[ $(( offset + size )) -gt "$filesize" ] && { echo ""; return; }
+	[ -z "$filesize" ] && return
+	[ $(( offset + size )) -gt "$filesize" ] && return
 	dd if="$filename" skip="$offset" bs=1 count="$size" 2>/dev/null \
 		| hexdump -v -n "$size" -e '1/1 "%02x"'
 }
@@ -188,13 +191,14 @@ fi_get_file_crc32() {
 	local count
 	[ -z "$offset" ] && offset=0
 	filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
+	[ -z "$filesize" ] && return 1
 	offset=$( printf "%d" "$offset" )
 	if [ -z "$length" ]; then
 		length=$(( filesize - offset ))
 	else
 		length=$( printf "%d" "$length" )
 	fi
-	[ "$length" -gt $(( filesize - offset )) ] && { echo ""; return 1; }
+	[ "$length" -gt $(( filesize - offset )) ] && return 1
 	dd if="$filename" iflag=skip_bytes,count_bytes skip=$offset bs=2048 count=$length 2>/dev/null | \
 		gzip -1 -c | tail -c8 | hexdump -v -n4 -e '1/4 "%08x"'
 	return 0
@@ -210,6 +214,7 @@ fi_check_uimage_crc() {
 	local imghdrfn
 	[ -z "$offset" ] && offset=0
 	filesize=$( /bin/busybox stat -c '%s' "$filename" 2>/dev/null )
+	[ -z "$filesize" ] && { echo "File '$filename' not found"; return 1; }
 	offset=$( printf "%d" "$offset" )
 	data_size=$( fi_get_uint32_at $(( offset + 12 )) "be" "$filename" )
 	total_size=$(( 64 + data_size ))
@@ -234,7 +239,6 @@ fi_check_uimage_crc() {
 		echo "uImage header has incorrect CRC32 checksum"
 		return 1
 	fi
-	echo ""
 	return 0
 }
 
@@ -272,7 +276,6 @@ fi_check_sizes() {
 		echo "image is greater than partition '$part_name'"
 		return 1
 	fi
-	echo ""
 	return 0
 }
 
@@ -311,11 +314,11 @@ fi_check_ubi_header() {
 	local magic_ubi2="55424921"  # "UBI!"
 
 	magic=$( fi_get_hexdump_at "$offset" 4 )
-	[ "$magic" != $FI_MAGIC_UBI ] && { echo ""; return 1; }
+	[ "$magic" != $FI_MAGIC_UBI ] && return 1
 
 	offset=$(( offset + FI_PAGESIZE ))
 	magic=$( fi_get_hexdump_at "$offset" 4 )
-	[ "$magic" != "$magic_ubi2" ] && { echo ""; return 1; }
+	[ "$magic" != "$magic_ubi2" ] && return 1
 
 	echo "true"
 	return 0
@@ -330,12 +333,12 @@ fi_get_rootfs_offset() {
 
 	for offset in 0 1 2 3 4; do
 		pos=$(( start + offset ))
-		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo "$pos"; return 0; }
+		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo -n "$pos"; return 0; }
 	done
 
 	for align in 4 8 16 32 64 128 256 512 1024 2048 4096; do
 		pos=$( fi_get_round_up "$start" "$align" )
-		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo "$pos"; return 0; }
+		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo -n "$pos"; return 0; }
 	done
 
 	align=65536
@@ -343,12 +346,10 @@ fi_get_rootfs_offset() {
 	end=$(( pos + 3000000 ))
 	while true; do
 		[ $(( pos + 150000 )) -gt "$FI_IMAGE_SIZE" ] && break
-		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo "$pos"; return 0; }
+		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo -n "$pos"; return 0; }
 		pos=$(( pos + align ))
 		[ "$pos" -ge "$end" ] && break
 	done
-
-	echo ""
 	return 1
 }
 
