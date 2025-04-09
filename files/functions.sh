@@ -42,6 +42,7 @@ FI_MAGIC_SYSUPG="7379737570677261"  # TAR "sysupgrade"
 FI_MAGIC_UIMAGE="27051956"          # uImage header
 FI_MAGIC_FIT="d00dfeed"             # FIT header
 FI_MAGIC_UBI="55424923"             # "UBI#"
+FI_MAGIC_UBI_BLK="55424921"         # "UBI!"
 FI_MAGIC_UBIFS="31181006"
 FI_MAGIC_HSQS="68737173"            # "hsqs"
 
@@ -311,16 +312,14 @@ fi_mtd_write() {
 fi_check_ubi_header() {
 	local offset=$1
 	local magic
-	local magic_ubi2="55424921"  # "UBI!"
 
 	magic=$( fi_get_hexdump_at "$offset" 4 )
 	[ "$magic" != $FI_MAGIC_UBI ] && return 1
 
 	offset=$(( offset + FI_PAGESIZE ))
 	magic=$( fi_get_hexdump_at "$offset" 4 )
-	[ "$magic" != "$magic_ubi2" ] && return 1
+	[ "$magic" != "$FI_MAGIC_UBI_BLK" ] && return 1
 
-	echo "true"
 	return 0
 }
 
@@ -333,12 +332,12 @@ fi_get_rootfs_offset() {
 
 	for offset in 0 1 2 3 4; do
 		pos=$(( start + offset ))
-		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo -n "$pos"; return 0; }
+		fi_check_ubi_header "$pos" && { echo -n "$pos"; return 0; }
 	done
 
 	for align in 4 8 16 32 64 128 256 512 1024 2048 4096; do
 		pos=$( fi_get_round_up "$start" "$align" )
-		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo -n "$pos"; return 0; }
+		fi_check_ubi_header "$pos" && { echo -n "$pos"; return 0; }
 	done
 
 	align=65536
@@ -346,7 +345,7 @@ fi_get_rootfs_offset() {
 	end=$(( pos + 3000000 ))
 	while true; do
 		[ $(( pos + 150000 )) -gt "$FI_IMAGE_SIZE" ] && break
-		[ -n "$( fi_check_ubi_header "$pos" )" ] && { echo -n "$pos"; return 0; }
+		fi_check_ubi_header "$pos" && { echo -n "$pos"; return 0; }
 		pos=$(( pos + align ))
 		[ "$pos" -ge "$end" ] && break
 	done
