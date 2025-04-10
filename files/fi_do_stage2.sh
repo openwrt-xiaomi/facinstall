@@ -28,6 +28,9 @@ fi
 if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_SYSUPG" ] && [ "$FI_HOOK_TARSYSUPG" != "true" ]; then
 	FI_IMAGE=
 fi
+if [ $FI_IMAGE_OPENWRT_SIGN != 0 ]; then
+	FI_IMAGE=
+fi
 
 if [ -f "$FI_IMAGE" ] && [ -n "$FI_SCRIPT" ]; then
 	filog "call: fi_do_stage2.sh for $FI_BOARD"

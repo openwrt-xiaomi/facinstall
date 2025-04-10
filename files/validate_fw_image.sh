@@ -10,8 +10,9 @@ export FI_LOGMODE=0
 export FI_STAGE=0
 filog "version: $FI_VERSION  image: $FI_IMAGE"
 fi_set_image $FI_IMAGE
+filog "magic: $FI_IMAGE_MAGIC  sign: $FI_IMAGE_OPENWRT_SIGN  size: $FI_IMAGE_SIZE"
 
-if [ "$FI_IMAGE_MAGIC" = $FI_MAGIC_SYSUPG ]; then
+if [ "$FI_IMAGE_MAGIC" = $FI_MAGIC_SYSUPG -o $FI_IMAGE_OPENWRT_SIGN != 0 ]; then
 	FI_IMAGE=
 else
 	if ! fi_init_board; then

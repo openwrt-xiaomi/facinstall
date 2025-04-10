@@ -37,6 +37,7 @@ FI_PAGESIZE=2048
 FI_IMAGE=
 FI_IMAGE_SIZE=
 FI_IMAGE_MAGIC=
+FI_IMAGE_OPENWRT_SIGN=0
 
 FI_MAGIC_SYSUPG="7379737570677261"  # TAR "sysupgrade"
 FI_MAGIC_UIMAGE="27051956"          # uImage header
@@ -172,15 +173,37 @@ fi_get_round_up() {
 function fi_set_image
 {
 	local image=$1
+	local hex
+	local pos
+	local size
 	local magic8
+	local sign_magic="46577830"  # FWx0
 	FI_IMAGE=$image
 	FI_IMAGE_SIZE=$( /bin/busybox stat -c '%s' "$image" 2>/dev/null )
 	FI_IMAGE_MAGIC=
+	FI_IMAGE_OPENWRT_SIGN=0
 	[ -z "$FI_IMAGE_SIZE" ] && return 1
 	[ $FI_IMAGE_SIZE -lt 1000000 ] && return 1
 	FI_IMAGE_MAGIC=$( fi_get_hexdump_at 0 4 )
 	magic8=$( fi_get_hexdump_at 0 8 )
 	[ "$magic8" = $FI_MAGIC_SYSUPG ] && FI_IMAGE_MAGIC="$magic8"
+	pos=$(( FI_IMAGE_SIZE - 16 ))
+	hex=$( fi_get_hexdump_at $pos 4 )
+	if [ "$hex" = "$sign_magic" ]; then
+		pos=$(( FI_IMAGE_SIZE - 7 ))
+		hex=$( fi_get_hexdump_at $pos 5 )
+		if [ "$hex" = "0000000000" ]; then
+			pos=$(( FI_IMAGE_SIZE - 4 ))
+			size=$( fi_get_uint32_at $pos "be" )
+			if [ -n "$size" ] && [ $size -gt 16 ]; then
+				pos=$(( FI_IMAGE_SIZE - 16 - size ))
+				hex=$( fi_get_hexdump_at $pos 4 )
+				if [ "$hex" = "$sign_magic" ]; then
+					FI_IMAGE_OPENWRT_SIGN=1
+				fi
+			fi
+		fi
+	fi
 	return 0
 } 
 

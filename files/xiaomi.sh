@@ -455,6 +455,12 @@ fi_platform_check_image() {
 		return 0
 	fi
 
+	if [ "$FI_IMAGE_MAGIC" = $FI_MAGIC_FIT -a $FI_IMAGE_OPENWRT_SIGN != 0 ]; then
+		export FI_LOGMODE=2
+		filog "Detect sysupgrade FIT-image"
+		return 0
+	fi
+
 	if [ "$FI_IMAGE_MAGIC" = "$FI_MAGIC_FIT" ]; then
 		if [ "$FI_UBI_IMG" = "true" ]; then
 			fierr "Device not support flashing FIT images!"
@@ -469,11 +475,11 @@ fi_platform_check_image() {
 		kernel_size=$( fi_get_uint32_at 4 "be" )
 		rootfs_offset=$( fi_get_rootfs_offset "$kernel_size" )
 		if [ -z "$rootfs_offset" ]; then
-			fierr "Cannot find ubinized rootfs in the factory image!"
+			fierr "Cannot find ubinized rootfs in the factory FIT-image!"
 			return 1
 		fi
 		if [ "$rootfs_offset" != "$kpart_size" ]; then
-			fierr "Unsupported kernel size into factory image!"
+			fierr "Unsupported kernel size into factory FIT-image!"
 			return 1
 		fi
 		export FI_LOGMODE=2
