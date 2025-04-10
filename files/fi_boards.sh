@@ -10,6 +10,8 @@ FI_KERN_UBIPART=
 FI_ROOT_UBIPART=
 
 fi_init_board() {
+	local mtdidx
+	
 	FI_SCRIPT=
 	
 	case "$FI_BOARD" in
@@ -76,8 +78,14 @@ fi_init_board() {
 		FI_UIMAGE_SUPPORT="true"
 		;;
 	xiaomi,redmi-router-ax6s)
-		FI_KERNPART="kernel"
-		FI_UBIPART="ubi"
+		mtdidx=$( find_mtd_index "ubi-loader" )
+		if [ -z "$mtdidx" ]; then
+			FI_KERNPART="kernel"
+			FI_UBIPART="ubi"
+		else
+			FI_KERNPART="ubi-loader"
+			FI_UBIPART="ubi"
+		fi
 		;;
 	xiaomi,mi-router-wr30u|\
 	xiaomi,mi-router-wr30u-stock|\

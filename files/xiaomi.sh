@@ -22,6 +22,8 @@ FI_RESTORE_ROOTFS2=
 FI_RESTORE_UBIFS2=
 FI_RESTORE_NVRAM=
 
+FI_IMAGE_INCLUDE_UBOOT=0
+
 
 fi_flash_images() {
 	local kernel_offset=$1
@@ -382,7 +384,8 @@ fi_platform_do_upgrade() {
 }
 
 fi_platform_init() {
-	local krn_size  ldr_size
+	local krn_size
+	FI_IMAGE_INCLUDE_UBOOT=0
 	FI_FIT_IMG=
 	FI_UBI_IMG=
 	FI_KERNEL_PART=$FI_KERNPART
@@ -396,16 +399,15 @@ fi_platform_init() {
 	fi
 	krn_size=$( fi_get_part_size "$FI_KERNEL_PART" )
 	if [ "$krn_size" = "0" ]; then
-		ldr_size=$( fi_get_part_size "ubi-loader" )
-		if [ "$ldr_size" = "0" ]; then
-			fierr "cannot find mtd partition for kernel image"
-			return 1
-		fi
-		FI_KERNEL_PART="ubi-loader"
+		fierr "cannot find mtd partition for kernel image"
+		return 1
 	fi
 	[ -z "$FI_IMAGE_SIZE" ] && return 1
 	[ "$FI_IMAGE_SIZE" -lt 1000000 ] && return 1
 	FI_IMG_MODEL=$( fi_get_uint8_at 14 )
+	if [ "$FI_IMAGE_MAGIC" = $FI_MAGIC_FIT ]; then
+		FI_IMAGE_INCLUDE_UBOOT=$( dd if="$FI_IMAGE" bs=512 count=1 2>/dev/null | grep -cF "OpenWrt Linux-u-boot" )
+	fi
 	return 0
 }
 
@@ -428,6 +430,11 @@ fi_platform_check_image() {
 	fi
 	if [ "$FI_IMAGE_SIZE" -lt 1000000 ]; then
 		fierr "File '$FI_IMAGE' is incorrect"
+		return 1
+	fi
+	
+	if [ $FI_IMAGE_INCLUDE_UBOOT != 0 ]; then
+		fierr "FIT-images with u-boot not supported"
 		return 1
 	fi
 
@@ -456,6 +463,13 @@ fi_platform_check_image() {
 	fi
 
 	if [ "$FI_IMAGE_MAGIC" = $FI_MAGIC_FIT -a $FI_IMAGE_OPENWRT_SIGN != 0 ]; then
+		# Detect sysupgrade.itb
+		if [ "$FI_BOARD" = "xiaomi,redmi-router-ax6s" ]; then
+			if [ "$FI_KERNEL_PART" != "ubi-loader" ]; then
+				fierr "Cannot flash FIT-image to current system (required ubi-loader)"
+				return 1
+			fi
+		fi
 		export FI_LOGMODE=2
 		filog "Detect sysupgrade FIT-image"
 		return 0
