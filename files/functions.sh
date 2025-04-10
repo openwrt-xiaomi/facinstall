@@ -95,21 +95,6 @@ fi_sed_path() {
 	echo -n "$str"
 }
 
-fi_set_image() {
-	FI_IMAGE=$1
-	FI_IMAGE_SIZE=$( /bin/busybox stat -c '%s' "$FI_IMAGE" 2>/dev/null )
-	FI_IMAGE_MAGIC=
-	[ -z "$FI_IMAGE_SIZE" ] && return 1
-	[ "$FI_IMAGE_SIZE" -lt 1000000 ] && return 1
-	FI_IMAGE_MAGIC=$( fi_get_hexdump_at 0 4 )
-	local magic8
-	magic8=$( fi_get_hexdump_at 0 8 )
-	if [ "$magic8" = $FI_MAGIC_SYSUPG ]; then
-		FI_IMAGE_MAGIC="$magic8"
-	fi
-	return 0
-} 
-
 fi_get_uint8_at() {
 	local offset=$1
 	local filename=$2
@@ -183,6 +168,21 @@ fi_get_round_up() {
 	fi
 	echo $(( value + pad ))
 }
+
+function fi_set_image
+{
+	local image=$1
+	local magic8
+	FI_IMAGE=$image
+	FI_IMAGE_SIZE=$( /bin/busybox stat -c '%s' "$image" 2>/dev/null )
+	FI_IMAGE_MAGIC=
+	[ -z "$FI_IMAGE_SIZE" ] && return 1
+	[ $FI_IMAGE_SIZE -lt 1000000 ] && return 1
+	FI_IMAGE_MAGIC=$( fi_get_hexdump_at 0 4 )
+	magic8=$( fi_get_hexdump_at 0 8 )
+	[ "$magic8" = $FI_MAGIC_SYSUPG ] && FI_IMAGE_MAGIC="$magic8"
+	return 0
+} 
 
 fi_get_file_crc32() {
 	local filename=$1
