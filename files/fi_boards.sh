@@ -3,6 +3,12 @@
 # Copyright (C) 2023 remittor
 #
 
+FI_UBIPART=
+FI_KERNPART=
+FI_ROOTPART=
+FI_KERN_UBIPART=
+FI_ROOT_UBIPART=
+
 fi_init_board() {
 	FI_SCRIPT=
 	
@@ -47,14 +53,14 @@ fi_init_board() {
 	asus,tuf-ax4200|\
 	asus,tuf-ax6000|\
 	asus,zenwifi-bt8)
-		CI_UBIPART="UBI_DEV"
-		CI_KERNPART="linux"
-		CI_ROOTPART="rootfs"
+		FI_UBIPART="UBI_DEV"
+		FI_KERNPART="linux"
+		FI_ROOTPART="rootfs"
 		;;
 	asus,rt-ax89x)
-		CI_UBIPART="UBI_DEV"
-		CI_KERNPART="linux"
-		CI_ROOTPART="jffs2"
+		FI_UBIPART="UBI_DEV"
+		FI_KERNPART="linux"
+		FI_ROOTPART="jffs2"
 		;;
 	xiaomi,mi-router-3-pro|\
 	xiaomi,mi-router-3g|\
@@ -63,15 +69,15 @@ fi_init_board() {
 	xiaomi,redmi-router-ac2100|\
 	xiaomi,mi-router-hd|\
 	xiaomi,r3d)
-		CI_KERNPART="kernel"
-		CI_UBIPART="ubi"
+		FI_KERNPART="kernel"
+		FI_UBIPART="ubi"
 		FI_KERNEL2_NAMES="kernel_stock|kernel_dup"
 		FI_HOOK_TARSYSUPG="true"
 		FI_UIMAGE_SUPPORT="true"
 		;;
 	xiaomi,redmi-router-ax6s)
-		CI_KERNPART="kernel"
-		CI_UBIPART="ubi"
+		FI_KERNPART="kernel"
+		FI_UBIPART="ubi"
 		;;
 	xiaomi,mi-router-wr30u|\
 	xiaomi,mi-router-wr30u-stock|\
@@ -79,8 +85,8 @@ fi_init_board() {
 	xiaomi,mi-router-ax3000t-stock|\
 	xiaomi,redmi-router-ax6000|\
 	xiaomi,redmi-router-ax6000-stock)
-		CI_KERN_UBIPART="ubi_kernel"
-		CI_ROOT_UBIPART="ubi"
+		FI_KERN_UBIPART="ubi_kernel"
+		FI_ROOT_UBIPART="ubi"
 		;;
 	*)
 		;;

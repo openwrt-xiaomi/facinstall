@@ -385,14 +385,14 @@ fi_platform_init() {
 	local krn_size  ldr_size
 	FI_FIT_IMG=
 	FI_UBI_IMG=
-	FI_KERNEL_PART=$CI_KERNPART
-	FI_ROOTFS_PART=$CI_UBIPART
-	if [ -n "$CI_KERN_UBIPART" ]; then
-		FI_KERNEL_PART=$CI_KERN_UBIPART
+	FI_KERNEL_PART=$FI_KERNPART
+	FI_ROOTFS_PART=$FI_UBIPART
+	if [ -n "$FI_KERN_UBIPART" ]; then
+		FI_KERNEL_PART=$FI_KERN_UBIPART
 		FI_UBI_IMG=true
 	fi
-	if [ -n "$CI_ROOT_UBIPART" ]; then
-		FI_ROOTFS_PART=$CI_ROOT_UBIPART
+	if [ -n "$FI_ROOT_UBIPART" ]; then
+		FI_ROOTFS_PART=$FI_ROOT_UBIPART
 	fi
 	krn_size=$( fi_get_part_size "$FI_KERNEL_PART" )
 	if [ "$krn_size" = "0" ]; then
