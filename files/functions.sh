@@ -96,6 +96,14 @@ fi_sed_path() {
 	echo -n "$str"
 }
 
+function fi_get_file_size
+{
+	local filename="$1"
+	if [ -f "$filename" ]; then
+		ls -1n "$filename" 2>/dev/null | awk '{print $5}'
+	fi
+}
+
 fi_get_uint8_at() {
 	local offset=$1
 	local filename=$2
@@ -105,7 +113,7 @@ fi_get_uint8_at() {
 		filename=$FI_IMAGE
 		filesize=$FI_IMAGE_SIZE
 	else
-		filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+		filesize=$( fi_get_file_size "$filename" )
 	fi
 	[ -z "$filesize" ] && return
 	[ $(( offset + 1 )) -gt "$filesize" ] && return
@@ -124,7 +132,7 @@ fi_get_uint32_at() {
 		filename=$FI_IMAGE
 		filesize=$FI_IMAGE_SIZE
 	else
-		filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+		filesize=$( fi_get_file_size "$filename" )
 	fi
 	[ -z "$filesize" ] && return
 	[ $(( offset + 4 )) -gt "$filesize" ] && return
@@ -147,7 +155,7 @@ fi_get_hexdump_at() {
 		filename=$FI_IMAGE
 		filesize=$FI_IMAGE_SIZE
 	else
-		filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+		filesize=$( fi_get_file_size "$filename" )
 	fi
 	[ -z "$filesize" ] && return
 	[ $(( offset + size )) -gt "$filesize" ] && return
@@ -179,7 +187,7 @@ function fi_set_image
 	local magic8
 	local sign_magic="46577830"  # FWx0
 	FI_IMAGE=$image
-	FI_IMAGE_SIZE=$( wc -c "$image" 2> /dev/null | awk '{print $1}' )
+	FI_IMAGE_SIZE=$( fi_get_file_size "$image" )
 	FI_IMAGE_MAGIC=
 	FI_IMAGE_OPENWRT_SIGN=0
 	[ -z "$FI_IMAGE_SIZE" ] && return 1
@@ -214,7 +222,7 @@ fi_get_file_crc32() {
 	local filesize
 	local count
 	[ -z "$offset" ] && offset=0
-	filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+	filesize=$( fi_get_file_size "$filename" )
 	[ -z "$filesize" ] && return 1
 	offset=$( printf "%d" "$offset" )
 	if [ -z "$length" ]; then
@@ -237,7 +245,7 @@ fi_check_uimage_crc() {
 	local hdr_crc_orig   hdr_crc_calc
 	local imghdrfn
 	[ -z "$offset" ] && offset=0
-	filesize=$( wc -c "$filename" 2> /dev/null | awk '{print $1}' )
+	filesize=$( fi_get_file_size "$filename" )
 	[ -z "$filesize" ] && { echo "File '$filename' not found"; return 1; }
 	offset=$( printf "%d" "$offset" )
 	data_size=$( fi_get_uint32_at $(( offset + 12 )) "be" "$filename" )
