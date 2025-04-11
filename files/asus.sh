@@ -40,19 +40,6 @@ fi_get_ubi_vol_dev() {
 	return 1
 }
 
-function fi_remove_ubiblock
-{
-	local ubivol="$1"
-	local ubiblk="ubiblock${ubivol:3}"
-	if [ -e "/dev/$ubiblk" ]; then
-		umount "/dev/$ubiblk" 2>/dev/null && _filog "unmounted /dev/$ubiblk" || :
-		if ! ubiblock -r "/dev/$ubivol"; then
-			_fierr "cannot remove $ubiblk"
-			return 1
-		fi
-	fi
-}
-
 fi_platform_do_upgrade() {
 	local fit_offset=0
 	local kernel_vol_dev

@@ -279,6 +279,42 @@ fi_get_part_size() {
 	printf "%d" "$mtd_size_hex"
 }
 
+function fi_remove_ubiblock
+{
+	local ubivol="$1"
+	local ubiblk="ubiblock${ubivol:3}"
+	if [ -e "/dev/$ubiblk" ]; then
+		umount "/dev/$ubiblk" 2>/dev/null && _filog "unmounted /dev/$ubiblk" || :
+		if ! ubiblock -r "/dev/$ubivol"; then
+			_fierr "cannot remove $ubiblk"
+			return 1
+		fi
+	fi
+}
+
+function fi_detach_ubi
+{
+	local ubipart="$1"
+	local ubidev
+	local mtdnum=$( find_mtd_index "$ubipart" )
+	if [ ! "$mtdnum" ]; then
+		_fierr "cannot find ubi mtd partition '$ubipart'"
+		return 1
+	fi
+	ubidev=$( nand_find_ubi "$ubipart" )
+	if [ "$ubidev" ]; then
+		for ubivol in $( find /dev -name "${ubidev}_*" -maxdepth 1 | sort ); do
+			ubivol="${ubivol:5}"
+			fi_remove_ubiblock "$ubivol" || :
+			umount "/dev/$ubivol" && _filog "unmounted /dev/$ubivol" || :
+		done
+		if ! ubidetach -m "$mtdnum"; then
+			_fierr "cannot detach ubi mtd partition '$ubipart'"
+			return 1
+		fi
+	fi
+}
+
 fi_check_sizes() {
 	local part_name=$1
 	local img_offset=$2

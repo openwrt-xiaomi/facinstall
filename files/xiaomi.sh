@@ -89,11 +89,13 @@ fi_flash_images() {
 	kernel_name="Kernel"
 	rootfs_name="Rootfs"
 
+	fi_detach_ubi "$FI_ROOTFS_PART"
 	mtd erase "$FI_ROOTFS_PART" || {
 		fierr "Failed to erase partition '$FI_ROOTFS_PART'"
 		return 1
 	}
 	if [ "$FI_UBI_IMG" = "true" ]; then
+		fi_detach_ubi "$FI_KERNEL_PART"
 		mtd erase "$FI_KERNEL_PART" || {
 			fierr "Failed to erase partition '$FI_KERNEL_PART'"
 			return 1
