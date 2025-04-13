@@ -45,7 +45,7 @@ define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 # check if we are on real system
 if [ -z "$${IPKG_INSTROOT}" ]; then
-	/etc/init.d/$(PKG_NAME) enabled
+	/etc/init.d/$(PKG_NAME) enable
 	/etc/init.d/$(PKG_NAME) start
 fi
 exit 0
