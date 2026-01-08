@@ -20,6 +20,7 @@ fi_init_board() {
 	asus,rt-ax59u|\
 	asus,rt-ax89x|\
 	asus,tuf-ax4200|\
+	asus,tuf-ax4200q|\
 	asus,tuf-ax6000|\
 	asus,zenwifi-bt8)
 		FI_SCRIPT="asus.sh"
@@ -53,6 +54,7 @@ fi_init_board() {
 	asus,rt-ax57m|\
 	asus,rt-ax59u|\
 	asus,tuf-ax4200|\
+	asus,tuf-ax4200q|\
 	asus,tuf-ax6000|\
 	asus,zenwifi-bt8)
 		FI_UBIPART="UBI_DEV"
@@ -121,6 +123,11 @@ fi_init_board() {
 		FI_KERNEL_SIZE=0x6406000
 		;;
 	asus,tuf-ax4200)
+		FI_HW_MODEL="TUF-AX4200"
+		FI_KERNEL_SIZE=0x45fe000
+		FI_DEL_TRX_HEADER=1
+		;;
+	asus,tuf-ax4200q)
 		FI_HW_MODEL="TUF-AX4200"
 		FI_KERNEL_SIZE=0x45fe000
 		FI_DEL_TRX_HEADER=1
